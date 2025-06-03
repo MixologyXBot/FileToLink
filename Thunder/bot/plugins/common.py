@@ -92,32 +92,6 @@ async def start_command(bot: Client, message: Message):
         parts = message.text.strip().split(maxsplit=1)
         if len(parts) == 1 or (len(parts) > 1 and parts[1].lower() == "start"):
             welcome_text = MSG_WELCOME.format(user_name=message.from_user.first_name)
-            
-            if Var.FORCE_CHANNEL_ID:
-                error_id_context = uuid.uuid4().hex[:8]
-                try:
-                    chat = await bot.get_chat(Var.FORCE_CHANNEL_ID)
-                    invite_link = getattr(chat, 'invite_link', None)
-                    chat_username = getattr(chat, 'username', None)
-                    chat_title = getattr(chat, 'title', 'Channel')
-                    
-                    if not invite_link and chat_username:
-                        invite_link = f"https://t.me/{chat_username}"
-                    
-                    if invite_link:
-                        welcome_text += f"\n\n{MSG_COMMUNITY_CHANNEL.format(channel_title=chat_title)}"
-                    else:
-                        logger.warning(f"(ID: {error_id_context}) Could not retrieve invite link for FORCE_CHANNEL_ID {Var.FORCE_CHANNEL_ID} for /start message text (Channel: {chat_title}, User: {user_id_str}).")
-                        welcome_text += f"\n\n{MSG_COMMUNITY_CHANNEL.format(channel_title=chat_title)}"
-                except asyncio.TimeoutError as e_timeout:
-                    logger.error(f"(ID: {error_id_context}) Timeout fetching Force Channel details for /start text (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e_timeout}")
-                    welcome_text += f"\n\n{MSG_DEFAULT_WELCOME}"
-                except RPCError as e_rpc:
-                    logger.error(f"(ID: {error_id_context}) RPCError fetching Force Channel details for /start text (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e_rpc}")
-                    welcome_text += f"\n\n{MSG_DEFAULT_WELCOME}"
-                except Exception as e:
-                    logger.error(f"(ID: {error_id_context}) Error adding force channel link to /start message text (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e}")
-                    welcome_text += f"\n\n{MSG_DEFAULT_WELCOME}"
 
             reply_markup = InlineKeyboardMarkup([
                 [
@@ -125,32 +99,9 @@ async def start_command(bot: Client, message: Message):
                     InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
                 ],
                 [
-                    InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
                     InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")
                 ]
             ])
-
-            if Var.FORCE_CHANNEL_ID:
-                error_id_context_button = uuid.uuid4().hex[:8]
-                try:
-                    chat = await bot.get_chat(Var.FORCE_CHANNEL_ID)
-                    invite_link = getattr(chat, 'invite_link', None)
-                    chat_username = getattr(chat, 'username', None)
-                    chat_title = getattr(chat, 'title', 'Channel')
-                    
-                    if not invite_link and chat_username:
-                        invite_link = f"https://t.me/{chat_username}"
-                    
-                    if invite_link:
-                        reply_markup.inline_keyboard.append([InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=chat_title), url=invite_link)])
-                    else:
-                        logger.warning(f"(ID: {error_id_context_button}) Could not retrieve invite link for FORCE_CHANNEL_ID {Var.FORCE_CHANNEL_ID} for /start message button (Channel: {chat_title}, User: {user_id_str}).")
-                except asyncio.TimeoutError as e_timeout_btn:
-                    logger.error(f"(ID: {error_id_context_button}) Timeout fetching Force Channel details for /start button (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e_timeout_btn}")
-                except RPCError as e_rpc_btn:
-                    logger.error(f"(ID: {error_id_context_button}) RPCError fetching Force Channel details for /start button (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e_rpc_btn}")
-                except Exception as e_btn:
-                    logger.error(f"(ID: {error_id_context_button}) Error adding force channel button to /start message (User: {user_id_str}, FChannel: {Var.FORCE_CHANNEL_ID}): {e_btn}")
 
             await message.reply_text(text=welcome_text, reply_markup=reply_markup, quote=True, link_preview_options=LinkPreviewOptions(is_disabled=True))
             return
@@ -251,8 +202,7 @@ async def about_command(bot: Client, message: Message):
 
         about_text = MSG_ABOUT
         buttons = [
-            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
-            [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink"),
+            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
              InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
