@@ -138,7 +138,7 @@ async def track_workload(client_id):
 @routes.get("/", allow_head=True)
 @exception_handler
 async def root_redirect(request):
-    raise web.HTTPFound("https://github.com/fyaz05/FileToLink")
+    raise web.HTTPFound("https://t.me/MixologyXBot")
 
 @routes.get("/status", allow_head=True)
 async def status_endpoint(request):
