@@ -144,7 +144,7 @@ MSG_ADMIN_RESTART_DONE = "✅ **Restart Successful!**"
 # =====================================================================================
 # ====== BUTTON TEXTS (User-facing) ======
 # =====================================================================================
-MSG_BUTTON_STREAM_NOW = "🖥️ Stream"
+MSG_BUTTON_STREAM_NOW = "▶️ Stream"
 MSG_BUTTON_DOWNLOAD = "📥 Download"
 MSG_BUTTON_GET_HELP = "📖 Get Help"
 MSG_BUTTON_QUICK_START = "🚀 Quick Start"
@@ -152,16 +152,16 @@ MSG_BUTTON_CANCEL_BROADCAST = "🛑 Cancel Broadcast"
 MSG_BUTTON_VIEW_PROFILE = "👤 View User Profile"
 MSG_BUTTON_ABOUT = "ℹ️ About Bot"
 MSG_BUTTON_STATUS = "📡 Status"
-MSG_BUTTON_JOIN_CHANNEL = "📢 Join {channel_title}"
+MSG_BUTTON_JOIN_CHANNEL = "Join {channel_title}"
 MSG_BUTTON_GITHUB = "🛠️ GitHub"
-MSG_BUTTON_START_CHAT = "📩 Start Chat"
-MSG_BUTTON_JOIN_CHAT = "📢 Join {chat_title}"
-MSG_BUTTON_CLOSE = "✖ Close"
+MSG_BUTTON_START_CHAT = "Start Bot Now"
+MSG_BUTTON_JOIN_CHAT = "Join {chat_title}"
+MSG_BUTTON_CLOSE = "🚫 Close"
 
 # ------ Quick Start Guide ------
 MSG_QUICK_START_GUIDE = (
     "🚀 **Quick Start Guide** 🚀\n\n"
-    "Welcome to the Thunder File to Link Bot! Here's how to get started:\n\n"
+    "Welcome to the Mixology Stream Bot! Here's how to get started:\n\n"
     "1. **Private Chat:** Send any file directly to me, and I'll reply with download and stream links.\n"
     "2. **Groups:** Reply to a file with the `/link` command. For multiple files, reply to the first file with `/link <number>` (e.g., `/link 5`).\n"
     "3. **Explore:** Use `/help` to see all available commands and features.\n\n"
@@ -175,7 +175,7 @@ MSG_QUICK_START_GUIDE = (
 # ------ Welcome, Help, About ------
 MSG_WELCOME = (
     "🌟 **Welcome, {user_name}!** 🌟\n\n"
-    "I'm **Thunder File to Link Bot** ⚡\n"
+    "I'm **Mixology Stream Bot** ⚡\n"
     "I generate direct download and streaming links for your files.\n\n"
     "**How to use:**\n"
     "1. Send any file to me for private links.\n"
@@ -218,7 +218,7 @@ MSG_HELP = (
 )
 
 MSG_ABOUT = (
-    "🌟 **About Thunder File to Link Bot** ℹ️\n\n"
+    "🌟 **About Mixology Stream Bot** ℹ️\n\n"
     "I'm your go-to bot for **instant download & streaming!** ⚡\n\n"
     "**🚀 Key Features:**\n"
     "> **Instant Links:** Get your links within seconds.\n"
@@ -261,12 +261,11 @@ MSG_DC_UNKNOWN = "Unknown"
 
 # ------ File Link Generation ------
 MSG_LINKS = (
-    "✨ **Your Links are Ready!** ✨\n\n"
-    "> `{file_name}`\n\n"
-    "📂 **File Size:** `{file_size}`\n\n"
-    "🔗 **Download Link:**\n`{download_link}`\n\n"
-    "🖥️ **Stream Link:**\n`{stream_link}`\n\n"
-    "⌛️ *Note: Links remain active while the bot is running and the file is accessible.*"
+    "📝 **File Name:** `{file_name}`\n"
+    "📦 **File Size:** `{file_size}`\n\n"
+    "📥 **Download Link:**\n`{download_link}`\n\n"
+    "▶️ **Stream Link:**\n`{stream_link}`\n\n"
+    "⌛ **Note:** Links valid for 24 hours only. Download or watch before they expire!"
 )
 
 # =====================================================================================
