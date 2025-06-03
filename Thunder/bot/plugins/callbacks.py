@@ -65,8 +65,7 @@ async def about_callback(client: Client, callback_query: CallbackQuery):
     try:
         await callback_query.answer()
         buttons = [
-            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
-            [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink"),
+            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
              InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
         ]
         await callback_query.message.edit_text(
