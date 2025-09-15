@@ -124,55 +124,6 @@ async def private_receive_handler(bot: Client, msg: Message, **kwargs):
     status_msg = await handle_flood_wait(msg.reply_text, MSG_PROCESSING_FILE, quote=True)
     await process_single(bot, msg, msg, status_msg, shortener_val)
 
-@StreamBot.on_message(
-    filters.channel &
-    filters.incoming &
-    (filters.document | filters.video | filters.audio) &
-    ~filters.chat(Var.BIN_CHANNEL),
-    group=-1
-)
-async def channel_receive_handler(bot: Client, msg: Message):
-    if hasattr(Var, 'BANNED_CHANNELS') and msg.chat.id in Var.BANNED_CHANNELS:
-        try:
-            await handle_flood_wait(bot.leave_chat, msg.chat.id)
-        except Exception as e:
-            logger.error(f"Error leaving banned channel {msg.chat.id}: {e}")
-        return
-    if not await is_admin(bot, msg.chat.id):
-        logger.debug(f"Bot is not admin in channel {msg.chat.id} ({msg.chat.title or 'Unknown'}). Ignoring message.")
-        return
-    try:
-        stored_msg = await fwd_media(msg)
-        if not stored_msg:
-            logger.error(f"Failed to forward media from channel {msg.chat.id}. Ignoring.")
-            return
-        shortener_val = await get_shortener_status(bot, msg)
-        links = await gen_links(stored_msg, shortener=shortener_val)
-        source_info = msg.chat.title or "Unknown Channel"
-        await handle_flood_wait(
-            stored_msg.reply_text,
-            MSG_NEW_FILE_REQUEST.format(
-                source_info=source_info,
-                id_=msg.chat.id,
-                online_link=links['online_link'],
-                stream_link=links['stream_link']
-            ),
-            link_preview_options=LinkPreviewOptions(is_disabled=True),
-            quote=True
-        )
-        try:
-            await handle_flood_wait(msg.edit_reply_markup, reply_markup=get_link_buttons(links))
-        except MessageNotModified:
-            pass
-        except MessageDeleteForbidden:
-            logger.debug(f"Failed to edit reply markup for message {msg.id} due to permissions. Sending new link instead.")
-            await send_link(msg, links)
-        except Exception as e:
-            logger.error(f"Error editing reply markup for message {msg.id}: {e}", exc_info=True)
-            await send_link(msg, links)
-    except Exception as e:
-        logger.error(f"Error in channel_receive_handler for message {msg.id}: {e}", exc_info=True)
-
 async def process_single(bot: Client, msg: Message, file_msg: Message, status_msg: Message, shortener_val: bool, original_request_msg: Optional[Message] = None):
     try:
         stored_msg = await fwd_media(file_msg)

@@ -87,3 +87,8 @@ class Var:
     SHORTEN_MEDIA_LINKS: bool = str_to_bool(os.getenv("SHORTEN_MEDIA_LINKS", "False"))
     URL_SHORTENER_API_KEY: str = os.getenv("URL_SHORTENER_API_KEY", "")
     URL_SHORTENER_SITE: str = os.getenv("URL_SHORTENER_SITE", "")
+    
+    VERCEL_PROTECT_ENABLED: bool = str_to_bool(os.getenv("VERCEL_PROTECT_ENABLED", "False"))
+    VERCEL_PROTECT_KEY: str = os.getenv("VERCEL_PROTECT_KEY", "")
+    VERCEL_DOMAIN: str = os.getenv("VERCEL_DOMAIN", "")
+    TOKEN_TTL_SECONDS: int = int(os.getenv("TOKEN_TTL_SECONDS", "86400"))

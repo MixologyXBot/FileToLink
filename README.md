@@ -482,5 +482,5 @@ This repository is unlicensed and provided as-is without any warranty. No permis
 
 <p align="center">
   ⭐ <b>Like this project? Give it a star!</b> ⭐<br>
-  🐛 <b>Found a bug or have a feature request?</b> <a href="https://github.com/fyaz05/FileToLink/issues/new">Open an issue</a>
+  🐛 <b>Found a bug or have a feature request?</b> <a href="https://telegram.me/MixologyXBot/issues/new">Open an issue</a>
 </p>
