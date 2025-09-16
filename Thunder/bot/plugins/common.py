@@ -78,13 +78,8 @@ async def start_command(bot: Client, msg: Message):
     
     btns = [
         [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
-         InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")],
-        [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
-         InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
+         InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]
     ]
-    
-    if link:
-        btns.append([InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)])
     
     await handle_flood_wait(msg.reply_text, text=txt, reply_markup=InlineKeyboardMarkup(btns))
 
@@ -96,13 +91,10 @@ async def help_command(bot: Client, msg: Message):
         await log_newusr(bot, msg.from_user.id, msg.from_user.first_name)
     
     txt = MSG_HELP.format(max_files=Var.MAX_BATCH_FILES)
-    btns = [[InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]]
-    
-    link, title = await get_force_info(bot)
-    if link:
-        btns.append([InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)])
-    
-    btns.append([InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")])
+    btns = [
+        [InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
+         InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
+    ]
     await handle_flood_wait(msg.reply_text, text=txt, reply_markup=InlineKeyboardMarkup(btns))
 
 @StreamBot.on_message(filters.command("about") & filters.private)
@@ -113,8 +105,7 @@ async def about_command(bot: Client, msg: Message):
         await log_newusr(bot, msg.from_user.id, msg.from_user.first_name)
     
     btns = [
-        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
-        [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
+        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
          InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
     ]
     
