@@ -20,8 +20,8 @@ if UPSTREAM_REPO:
         
         git_commands = (
             f"git init -q && "
-            f"git config --global user.email thunder@update.local && "
-            f"git config --global user.name Thunder && "
+            f"git config --global user.email MixologyXBot@outlook.com && "
+            f"git config --global user.name MixologyXBot && "
             f"git add . && "
             f"git commit -sm update -q && "
             f"git remote add origin {UPSTREAM_REPO} && "
@@ -39,4 +39,5 @@ if UPSTREAM_REPO:
     finally:
         if opath.exists(config_backup):
             rename(config_backup, 'config.env')
+
 
