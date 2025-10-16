@@ -5,8 +5,8 @@ from Thunder.utils.logger import logger
 
 load_dotenv('config.env', override=True)
 
-UPSTREAM_REPO = getenv('UPSTREAM_REPO', "https://github.com/fyaz05/FileToLink")
-UPSTREAM_BRANCH = getenv('UPSTREAM_BRANCH', "main")
+UPSTREAM_REPO = getenv("UPSTREAM_REPO", "").strip() or None
+UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "").strip() or "main"
 
 if UPSTREAM_REPO:
     config_backup = '../config.env.tmp'
@@ -39,3 +39,4 @@ if UPSTREAM_REPO:
     finally:
         if opath.exists(config_backup):
             rename(config_backup, 'config.env')
+
