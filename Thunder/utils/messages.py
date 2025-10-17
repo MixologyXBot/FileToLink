@@ -138,7 +138,6 @@ MSG_BUTTON_CLOSE = "✖ Close"
 
 MSG_WELCOME = (
     "🌟 **Welcome, {user_name}!** 🌟\n\n"
-    "I'm **Thunder File to Link Bot** ⚡\n"
     "I can generate direct download and streaming links for your files. Simply send me any file, and I'll provide you with shareable links.\n\n"
     "🔸 Available Commands:\n"
     "> • /help - Learn how to use the bot\n"
@@ -375,4 +374,5 @@ MSG_SYSTEM_STATS = (
 )
 
 MSG_DB_STATS = "📊 **Database Statistics**\n\n> 👥 **Total Users:** `{total_users}`"
+
 
