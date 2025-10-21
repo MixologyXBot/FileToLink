@@ -12,37 +12,20 @@ from Thunder.utils.handler import handle_flood_wait
 from Thunder.utils.logger import logger
 from Thunder.utils.messages import (
     MSG_ABOUT, MSG_BROADCAST_CANCEL, MSG_BUTTON_ABOUT, MSG_BUTTON_CLOSE,
-    MSG_BUTTON_GET_HELP, MSG_BUTTON_GITHUB, MSG_BUTTON_JOIN_CHANNEL,
+    MSG_BUTTON_GET_HELP, MSG_BUTTON_JOIN_CHANNEL,
     MSG_ERROR_BROADCAST_INSTRUCTION, MSG_ERROR_BROADCAST_RESTART,
     MSG_ERROR_CALLBACK_UNSUPPORTED, MSG_HELP
 )
 from Thunder.vars import Var
 
-async def get_force_channel_button(client: Client):
-    if not Var.FORCE_CHANNEL_ID:
-        return None
-    try:
-        chat = await handle_flood_wait(client.get_chat, Var.FORCE_CHANNEL_ID)
-        if chat:
-            invite_link = chat.invite_link or (f"https://t.me/{chat.username}" if chat.username else None)
-            if invite_link:
-                return [InlineKeyboardButton(
-                    MSG_BUTTON_JOIN_CHANNEL.format(channel_title=chat.title or "Channel"),
-                    url=invite_link
-                )]
-    except Exception as e:
-        logger.error(f"Error getting force channel button: {e}", exc_info=True)
-    return None
-
 @StreamBot.on_callback_query(filters.regex(r"^help_command$"))
 async def help_callback(client: Client, callback_query: CallbackQuery):
     try:
         await callback_query.answer()
-        buttons = [[InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]]
-        force_button = await get_force_channel_button(client)
-        if force_button:
-            buttons.append(force_button)
-        buttons.append([InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")])
+        buttons = [
+            [InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
+             InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
+        ]
         await handle_flood_wait(
             callback_query.message.edit_text,
             text=MSG_HELP.format(max_files=Var.MAX_BATCH_FILES),
@@ -60,11 +43,8 @@ async def about_callback(client: Client, callback_query: CallbackQuery):
     try:
         await callback_query.answer()
         buttons = [
-            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
-            [
-                InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink"),
-                InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")
-            ]
+            [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
+             InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
         ]
         await handle_flood_wait(
             callback_query.message.edit_text,

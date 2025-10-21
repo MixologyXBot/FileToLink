@@ -18,8 +18,7 @@ from Thunder.utils.handler import handle_flood_wait
 from Thunder.utils.human_readable import humanbytes
 from Thunder.utils.logger import logger
 from Thunder.utils.messages import (
-    MSG_ABOUT, MSG_BUTTON_ABOUT, MSG_BUTTON_CLOSE, MSG_BUTTON_GET_HELP,
-    MSG_BUTTON_GITHUB, MSG_BUTTON_JOIN_CHANNEL, MSG_BUTTON_VIEW_PROFILE,
+    MSG_ABOUT, MSG_BUTTON_ABOUT, MSG_BUTTON_CLOSE, MSG_BUTTON_GET_HELP, MSG_BUTTON_JOIN_CHANNEL, MSG_BUTTON_VIEW_PROFILE,
     MSG_COMMUNITY_CHANNEL, MSG_DC_ANON_ERROR, MSG_DC_FILE_ERROR,
     MSG_DC_FILE_INFO, MSG_DC_INVALID_USAGE, MSG_DC_UNKNOWN,
     MSG_ERROR_USER_INFO, MSG_FILE_TYPE_ANIMATION, MSG_FILE_TYPE_AUDIO,
@@ -72,19 +71,11 @@ async def start_command(bot: Client, msg: Message):
                 return await handle_flood_wait(msg.reply_text, text=MSG_TOKEN_INVALID)
             
     txt = MSG_WELCOME.format(user_name=user.first_name if user else "Unknown")
-    link, title = await get_force_info(bot)
-    if link:
-        txt += f"\n\n{MSG_COMMUNITY_CHANNEL.format(channel_title=title)}"
     
     btns = [
         [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
-         InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")],
-        [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
          InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
     ]
-    
-    if link:
-        btns.append([InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)])
     
     await handle_flood_wait(msg.reply_text, text=txt, reply_markup=InlineKeyboardMarkup(btns))
 
@@ -96,13 +87,10 @@ async def help_command(bot: Client, msg: Message):
         await log_newusr(bot, msg.from_user.id, msg.from_user.first_name)
     
     txt = MSG_HELP.format(max_files=Var.MAX_BATCH_FILES)
-    btns = [[InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]]
-    
-    link, title = await get_force_info(bot)
-    if link:
-        btns.append([InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)])
-    
-    btns.append([InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")])
+    btns = [
+        [InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
+         InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
+    ]
     await handle_flood_wait(msg.reply_text, text=txt, reply_markup=InlineKeyboardMarkup(btns))
 
 @StreamBot.on_message(filters.command("about") & filters.private)
@@ -113,8 +101,7 @@ async def about_command(bot: Client, msg: Message):
         await log_newusr(bot, msg.from_user.id, msg.from_user.first_name)
     
     btns = [
-        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
-        [InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
+        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
          InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")]
     ]
     

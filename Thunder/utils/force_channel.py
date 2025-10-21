@@ -58,11 +58,11 @@ async def force_channel_check(client: Client, message: Message):
                 message.reply_text,
                 MSG_COMMUNITY_CHANNEL.format(channel_title=title),
                 reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton("Join", url=link)
+                    InlineKeyboardButton("Join Channel", url=link)
                 ]])
             )
         else:
-            await handle_flood_wait(message.reply_text, "You must join the channel to use this bot.")
+            await handle_flood_wait(message.reply_text, "To access the **Bot**, please Join Channel first.")
         return False
     except Exception as e:
         logger.error(f"Error checking force channel: {e}", exc_info=True)
