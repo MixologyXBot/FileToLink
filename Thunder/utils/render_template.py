@@ -9,7 +9,7 @@ from pyrogram.errors import FloodWait
 
 from Thunder.bot import StreamBot
 from Thunder.server.exceptions import InvalidHash
-from Thunder.utils.file_properties import get_fname, get_uniqid
+from Thunder.utils.file_properties import get_fname, get_uniqid, get_media
 from Thunder.utils.logger import logger
 from Thunder.vars import Var
 
@@ -41,12 +41,25 @@ async def render_page(id: int, secure_hash: str, requested_action: str | None = 
         quoted_filename = urllib.parse.quote(file_name.replace('/', '_'))
         src = urllib.parse.urljoin(Var.URL, f'{secure_hash}{id}/{quoted_filename}')
         safe_filename = html_module.escape(file_name)
+
         if requested_action == 'stream':
+            media = get_media(message)
+            mime_type = getattr(media, 'mime_type', 'video/mp4')  # Default to video/mp4
+
+            if mime_type.startswith('video/'):
+                tag = 'video'
+            elif mime_type.startswith('audio/'):
+                tag = 'audio'
+            else:
+                tag = 'video'  # Default for other types
+
             template = template_env.get_template('req.html')
             context = {
                 'heading': f"View {safe_filename}",
                 'file_name': safe_filename,
-                'src': src
+                'src': src,
+                'tag': tag,
+                'mime_type': mime_type
             }
         else:
             template = template_env.get_template('dl.html')
