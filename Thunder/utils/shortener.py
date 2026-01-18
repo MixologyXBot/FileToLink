@@ -8,6 +8,9 @@ from urllib.parse import quote
 from Thunder.vars import Var
 from Thunder.utils.logger import logger
 
+from cryptography.fernet import Fernet
+import time, json
+
 class ShortenerPlugin(ABC):
     @classmethod
     @abstractmethod
@@ -133,7 +136,17 @@ class ShortenerSystem:
             return url
         
         try:
-            return await self.plugin.shorten(url, Var.URL_SHORTENER_API_KEY)
+            short_link = await self.plugin.shorten(url, Var.URL_SHORTENER_API_KEY)
+    
+            if getattr(Var, "VERCEL_PROTECT_ENABLED", False):
+                fernet = Fernet(Var.VERCEL_PROTECT_KEY.encode())
+                payload = {
+                    "url": short_link,
+                    "exp": int(time.time()) + getattr(Var, "TOKEN_TTL_SECONDS", 86400)
+                }
+                token = fernet.encrypt(json.dumps(payload).encode()).decode()
+                short_link = f"https://{Var.VERCEL_DOMAIN}/token/{token}"
+            return short_link
         except Exception as e:
             logger.error(f"Error shortening URL {url}: {e}", exc_info=True)
             return url
