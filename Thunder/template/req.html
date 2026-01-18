@@ -155,60 +155,64 @@
                 <div class="player-group" id="androidGroup">
                     <div class="group-label">Android</div>
                     <div class="player-grid">
-                        <a href="intent://{{ src }}#Intent;package=org.videolan.vlc;end" class="player-link">
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=org.videolan.vlc;end"
+                            class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             VLC
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=com.mxtech.videoplayer.ad;S.title={{ file_name }};end"
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=com.mxtech.videoplayer.ad;S.title={{ file_name }};end"
                             class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             MX Player
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=com.mxtech.videoplayer.pro;S.title={{ file_name }};end"
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=com.mxtech.videoplayer.pro;S.title={{ file_name }};end"
                             class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             MX Player Pro
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=com.young.simple.player;end" class="player-link">
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=com.young.simple.player;end"
+                            class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             Splayer
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=dev.anilbeesetti.nextplayer;S.title={{ file_name }};end"
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=dev.anilbeesetti.nextplayer;S.title={{ file_name }};end"
                             class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             Next Player
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=org.courville.nova;S.title={{ file_name }};end"
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=org.courville.nova;S.title={{ file_name }};end"
                             class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             Nova Player
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=is.xyz.mpv;S.title={{ file_name }};end"
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=is.xyz.mpv;S.title={{ file_name }};end"
                             class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             MPV-Android
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=com.brouken.player;end" class="player-link">
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=com.brouken.player;end"
+                            class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
                             Just Player
                         </a>
-                        <a href="intent://{{ src }}#Intent;package=com.newin.nplayer.pro;end" class="player-link">
+                        <a href="intent:{{ src }}#Intent;action=android.intent.action.VIEW;type=video/*;package=com.newin.nplayer.pro;end"
+                            class="player-link">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                             </svg>
@@ -353,4 +357,3 @@
 </body>
 
 </html>
-
