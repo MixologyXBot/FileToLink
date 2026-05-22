@@ -63,7 +63,7 @@ async def force_channel_check(client: pytdbot.Client, message: types.Message):
             link, title = await get_force_info(client)
             if link and title:
                 button = types.InlineKeyboardButton(
-                    text="Join",
+                    text="Join Channel",
                     type=types.InlineKeyboardButtonTypeUrl(url=link)
                 )
                 try:
@@ -75,7 +75,7 @@ async def force_channel_check(client: pytdbot.Client, message: types.Message):
                     logger.debug(f"Failed to send force channel join prompt to user {from_id}")
             else:
                 try:
-                    await message.reply_text("You must join the channel to use this bot.")
+                    await message.reply_text("To access the **Bot**, please Join Channel first.")
                 except Exception:
                     logger.debug(f"Failed to send plain join channel message to user {from_id}")
             return False
@@ -85,7 +85,7 @@ async def force_channel_check(client: pytdbot.Client, message: types.Message):
             link, title = await get_force_info(client)
             if link and title:
                 button = types.InlineKeyboardButton(
-                    text="Join",
+                    text="Join Channel",
                     type=types.InlineKeyboardButtonTypeUrl(url=link)
                 )
                 try:
@@ -97,7 +97,7 @@ async def force_channel_check(client: pytdbot.Client, message: types.Message):
                     logger.debug(f"Failed to send force channel join prompt to user {from_id} (left/banned)")
             else:
                 try:
-                    await message.reply_text("You must join the channel to use this bot.")
+                    await message.reply_text("To access the **Bot**, please Join Channel first.")
                 except Exception:
                     logger.debug(f"Failed to send plain join channel message to user {from_id} (left/banned)")
             return False

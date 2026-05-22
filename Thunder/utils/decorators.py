@@ -83,8 +83,9 @@ async def require_token(client, message: types.Message):
         if not bot_username:
             bot_username = getattr(me, "username", None)
 
-        deep_link = f"https://t.me/{bot_username}?start={temp_token_string}"
+        deep_link = f"https://telegram.me/{bot_username}?start={temp_token_string}"
         short_url = deep_link
+        duration_hours = getattr(Var, "TOKEN_TTL_HOURS", 24)
 
         try:
             short_url_result = await shorten(deep_link)
@@ -94,12 +95,12 @@ async def require_token(client, message: types.Message):
             logger.warning(f"Failed to shorten token link: {e}")
 
         button = types.InlineKeyboardButton(
-            text="Activate Access",
+            text="Collect Token",
             type=types.InlineKeyboardButtonTypeUrl(url=short_url)
         )
         try:
             await message.reply_text(
-                MSG_TOKEN_INVALID,
+                MSG_TOKEN_INVALID.format(duration=duration_hours),
                 reply_markup=types.ReplyMarkupInlineKeyboard(rows=[[button]])
             )
         except Exception as e:

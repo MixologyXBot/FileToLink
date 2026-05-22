@@ -1,6 +1,7 @@
 aiofiles>=25.1.0
 aiohttp
 cloudscraper
+cryptography
 Jinja2
 pytdbot[tdjson]
 pymongo

@@ -18,7 +18,6 @@ from Thunder.utils.messages import (
     MSG_BUTTON_ABOUT,
     MSG_BUTTON_CLOSE,
     MSG_BUTTON_GET_HELP,
-    MSG_BUTTON_GITHUB,
     MSG_BUTTON_JOIN_CHANNEL,
     MSG_BUTTON_VIEW_PROFILE,
     MSG_COMMUNITY_CHANNEL,
@@ -106,19 +105,11 @@ async def start_command(bot: pytdbot.Client, msg: types.Message):
                     return
 
     txt = MSG_WELCOME.format(user_name="")
-    link, title = await get_force_info(bot)
-    if link:
-        txt += f"\n\n{MSG_COMMUNITY_CHANNEL.format(channel_title=title)}"
 
     buttons = [
         [types.InlineKeyboardButton(text=MSG_BUTTON_GET_HELP, type=types.InlineKeyboardButtonTypeCallback(data=b"help_command")),
-         types.InlineKeyboardButton(text=MSG_BUTTON_ABOUT, type=types.InlineKeyboardButtonTypeCallback(data=b"about_command"))],
-        [types.InlineKeyboardButton(text=MSG_BUTTON_GITHUB, type=types.InlineKeyboardButtonTypeUrl(url="https://github.com/fyaz05/FileToLink/")),
-         types.InlineKeyboardButton(text=MSG_BUTTON_CLOSE, type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel"))]
+         types.InlineKeyboardButton(text=MSG_BUTTON_ABOUT, type=types.InlineKeyboardButtonTypeCallback(data=b"about_command"))]
     ]
-
-    if link:
-        buttons.append([types.InlineKeyboardButton(text=MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), type=types.InlineKeyboardButtonTypeUrl(url=link))])
 
     try:
         await msg.reply_text(txt, reply_markup=types.ReplyMarkupInlineKeyboard(rows=buttons))
@@ -135,13 +126,10 @@ async def help_command(bot: pytdbot.Client, msg: types.Message):
         await log_newusr(bot, from_id, "")
 
     txt = MSG_HELP.format(max_files=Var.MAX_BATCH_FILES)
-    buttons = [[types.InlineKeyboardButton(text=MSG_BUTTON_ABOUT, type=types.InlineKeyboardButtonTypeCallback(data=b"about_command"))]]
-
-    link, title = await get_force_info(bot)
-    if link:
-        buttons.append([types.InlineKeyboardButton(text=MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), type=types.InlineKeyboardButtonTypeUrl(url=link))])
-
-    buttons.append([types.InlineKeyboardButton(text=MSG_BUTTON_CLOSE, type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel"))])
+    buttons = [
+        [types.InlineKeyboardButton(text=MSG_BUTTON_ABOUT, type=types.InlineKeyboardButtonTypeCallback(data=b"about_command")),
+         types.InlineKeyboardButton(text=MSG_BUTTON_CLOSE, type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel"))]
+    ]
     try:
         await msg.reply_text(txt, reply_markup=types.ReplyMarkupInlineKeyboard(rows=buttons))
     except Exception as e:
@@ -157,8 +145,7 @@ async def about_command(bot: pytdbot.Client, msg: types.Message):
         await log_newusr(bot, from_id, "")
 
     buttons = [
-        [types.InlineKeyboardButton(text=MSG_BUTTON_GET_HELP, type=types.InlineKeyboardButtonTypeCallback(data=b"help_command"))],
-        [types.InlineKeyboardButton(text=MSG_BUTTON_GITHUB, type=types.InlineKeyboardButtonTypeUrl(url="https://github.com/fyaz05/FileToLink/")),
+        [types.InlineKeyboardButton(text=MSG_BUTTON_GET_HELP, type=types.InlineKeyboardButtonTypeCallback(data=b"help_command")),
          types.InlineKeyboardButton(text=MSG_BUTTON_CLOSE, type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel"))]
     ]
 

@@ -13,7 +13,6 @@ from Thunder.utils.messages import (
     MSG_BUTTON_ABOUT,
     MSG_BUTTON_CLOSE,
     MSG_BUTTON_GET_HELP,
-    MSG_BUTTON_GITHUB,
     MSG_BUTTON_JOIN_CHANNEL,
     MSG_ERROR_BROADCAST_INSTRUCTION,
     MSG_ERROR_BROADCAST_RESTART,
@@ -21,31 +20,6 @@ from Thunder.utils.messages import (
     MSG_HELP,
 )
 from Thunder.vars import Var
-
-
-async def get_force_channel_button(client: pytdbot.Client):
-    if not Var.FORCE_CHANNEL_ID:
-        return None
-    try:
-        chat = await client.getChat(chat_id=Var.FORCE_CHANNEL_ID)
-        if isinstance(chat, types.Error):
-            return None
-        if chat:
-            invite_link = None
-            if hasattr(chat, "invite_link") and chat.invite_link:
-                invite_link = chat.invite_link
-            if not invite_link:
-                if hasattr(chat, "type") and isinstance(chat.type, types.ChatTypeSupergroup):
-                    sg_id = chat.type.supergroup_id
-                    invite_link = f"https://t.me/c/{sg_id}"
-            if invite_link:
-                return [types.InlineKeyboardButton(
-                    text=MSG_BUTTON_JOIN_CHANNEL.format(channel_title=chat.title or "Channel"),
-                    type=types.InlineKeyboardButtonTypeUrl(url=invite_link)
-                )]
-    except Exception as e:
-        logger.error(f"Error getting force channel button: {e}", exc_info=True)
-    return None
 
 
 def _cb_data(callback_query: types.UpdateNewCallbackQuery) -> str:
@@ -78,17 +52,16 @@ async def help_callback(client: pytdbot.Client, callback_query: types.UpdateNewC
         result = await callback_query.answer(text="", show_alert=False)
         if is_error(result):
             logger.debug(f"Callback answer failed: {result.message}")
-        buttons = [[types.InlineKeyboardButton(
-            text=MSG_BUTTON_ABOUT,
-            type=types.InlineKeyboardButtonTypeCallback(data=b"about_command")
-        )]]
-        force_button = await get_force_channel_button(client)
-        if force_button:
-            buttons.append(force_button)
-        buttons.append([types.InlineKeyboardButton(
-            text=MSG_BUTTON_CLOSE,
-            type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel")
-        )])
+        buttons = [[
+            types.InlineKeyboardButton(
+                text=MSG_BUTTON_ABOUT,
+                type=types.InlineKeyboardButtonTypeCallback(data=b"about_command")
+            ),
+            types.InlineKeyboardButton(
+                text=MSG_BUTTON_CLOSE,
+                type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel")
+            )
+        ]]
         try:
             await _edit_cb_message(
                 client, callback_query,
@@ -107,22 +80,16 @@ async def about_callback(client: pytdbot.Client, callback_query: types.UpdateNew
         result = await callback_query.answer(text="", show_alert=False)
         if is_error(result):
             logger.debug(f"Callback answer failed: {result.message}")
-        buttons = [
-            [types.InlineKeyboardButton(
+        buttons = [[
+            types.InlineKeyboardButton(
                 text=MSG_BUTTON_GET_HELP,
                 type=types.InlineKeyboardButtonTypeCallback(data=b"help_command")
-            )],
-            [
-                types.InlineKeyboardButton(
-                    text=MSG_BUTTON_GITHUB,
-                    type=types.InlineKeyboardButtonTypeUrl(url="https://github.com/fyaz05/FileToLink")
-                ),
-                types.InlineKeyboardButton(
-                    text=MSG_BUTTON_CLOSE,
-                    type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel")
-                )
-            ]
-        ]
+            ),
+            types.InlineKeyboardButton(
+                text=MSG_BUTTON_CLOSE,
+                type=types.InlineKeyboardButtonTypeCallback(data=b"close_panel")
+            )
+        ]]
         try:
             await _edit_cb_message(
                 client, callback_query,
