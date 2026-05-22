@@ -3,7 +3,6 @@
 *.so
 .venv/
 .Python
-config.env
 log.text
 .vscode/
 **/__pycache__/
