@@ -131,7 +131,7 @@ class _FilterAnd:
         self.filters = filters
 
     def __call__(self, client: Any, update: Any) -> bool:
-        return all(f(client, update) for f in self.filters)
+        return all(_apply_filter(f, client, update) for f in self.filters)
 
 
 class _FilterOr:
@@ -139,7 +139,7 @@ class _FilterOr:
         self.filters = filters
 
     def __call__(self, client: Any, update: Any) -> bool:
-        return any(f(client, update) for f in self.filters)
+        return any(_apply_filter(f, client, update) for f in self.filters)
 
 
 class _FilterNot:
@@ -147,7 +147,13 @@ class _FilterNot:
         self.filt = filt
 
     def __call__(self, client: Any, update: Any) -> bool:
-        return not self.filt(client, update)
+        return not _apply_filter(self.filt, client, update)
+
+
+def _apply_filter(filter_obj: Any, client: Any, update: Any) -> bool:
+    if isinstance(filter_obj, pytdbot.filters.Filter):
+        return filter_obj.func(client, update)
+    return filter_obj(client, update)
 
 
 class Filters:
@@ -216,3 +222,23 @@ class Filters:
                 return not chat.type.is_channel
             return False
         return pytdbot.filters.create(_check)
+
+
+def _filter_and(self, other: pytdbot.filters.Filter) -> pytdbot.filters.Filter:
+    return pytdbot.filters.create(_FilterAnd(self, other))
+
+
+def _filter_or(self, other: pytdbot.filters.Filter) -> pytdbot.filters.Filter:
+    return pytdbot.filters.create(_FilterOr(self, other))
+
+
+def _filter_not(self) -> pytdbot.filters.Filter:
+    return pytdbot.filters.create(_FilterNot(self))
+
+
+if not hasattr(pytdbot.filters.Filter, "__and__"):
+    pytdbot.filters.Filter.__and__ = _filter_and
+    pytdbot.filters.Filter.__rand__ = _filter_and
+    pytdbot.filters.Filter.__or__ = _filter_or
+    pytdbot.filters.Filter.__ror__ = _filter_or
+    pytdbot.filters.Filter.__invert__ = _filter_not
