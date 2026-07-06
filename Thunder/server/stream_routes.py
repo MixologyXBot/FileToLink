@@ -28,6 +28,7 @@ routes = web.RouteTableDef()
 SECURE_HASH_LENGTH = 6
 CHUNK_SIZE = 1024 * 1024
 MAX_CONCURRENT_PER_CLIENT = 8
+OVERLOAD_RETRY_AFTER_SECONDS = 2
 RANGE_REGEX = re.compile(r"^bytes=(?P<start>\d*)-(?P<end>\d*)$")
 PATTERN_HASH_FIRST = re.compile(
     rf"^([a-zA-Z0-9_-]{{{SECURE_HASH_LENGTH}}})(\d+)(?:/.*)?$")
@@ -93,17 +94,29 @@ def select_optimal_client() -> tuple[int, ByteStreamer]:
     if not work_loads:
         raise web.HTTPInternalServerError(
             text=("No available clients to handle the request. "
-                  "Please try again later."))
+                  "Please try again later."),
+            headers=CORS_HEADERS,
+        )
 
     available_clients = [
         (cid, load) for cid, load in work_loads.items()
         if load < MAX_CONCURRENT_PER_CLIENT]
 
-    if available_clients:
-        client_id = min(available_clients, key=lambda x: x[1])[0]
-    else:
-        client_id = min(work_loads, key=work_loads.get)
+    if not available_clients:
+        loads = list(work_loads.values())
+        load_range = f"~{min(loads)}–{max(loads)}" if min(loads) != max(loads) else f"~{min(loads)}"
+        raise web.HTTPServiceUnavailable(
+            text=(
+                "All Telegram clients are currently at capacity "
+                f"({load_range} active streams). Please retry shortly."
+            ),
+            headers={
+                **CORS_HEADERS,
+                "Retry-After": str(OVERLOAD_RETRY_AFTER_SECONDS),
+            },
+        )
 
+    client_id = min(available_clients, key=lambda x: x[1])[0]
     return client_id, get_streamer(client_id)
 
 
@@ -406,6 +419,10 @@ async def canonical_media_delivery(request: web.Request):
         except (FileNotFound, InvalidHash):
             work_loads[client_id] -= 1
             raise
+        except web.HTTPException as e:
+            work_loads[client_id] -= 1
+            logger.debug(f"Client HTTP error in canonical stream: {e}")
+            raise
         except Exception as e:
             work_loads[client_id] -= 1
             error_id = secrets.token_hex(6)
@@ -415,6 +432,9 @@ async def canonical_media_delivery(request: web.Request):
     except (InvalidHash, FileNotFound) as e:
         logger.debug(f"Canonical client error: {type(e).__name__} - {e}", exc_info=True)
         raise web.HTTPNotFound(text="Resource not found") from e
+    except web.HTTPException as e:
+        logger.warning(f"HTTP exception in canonical stream: {e}")
+        raise
     except Exception as e:
         error_id = secrets.token_hex(6)
         logger.error(f"Canonical server error {error_id}: {e}", exc_info=True)
@@ -450,6 +470,10 @@ async def media_delivery(request: web.Request):
         except (FileNotFound, InvalidHash):
             work_loads[client_id] -= 1
             raise
+        except web.HTTPException as e:
+            work_loads[client_id] -= 1
+            logger.debug(f"Client HTTP error in media stream: {e}")
+            raise
         except Exception as e:
             work_loads[client_id] -= 1
             error_id = secrets.token_hex(6)
@@ -462,6 +486,9 @@ async def media_delivery(request: web.Request):
     except (InvalidHash, FileNotFound) as e:
         logger.debug(f"Client error: {type(e).__name__} - {e}", exc_info=True)
         raise web.HTTPNotFound(text="Resource not found") from e
+    except web.HTTPException as e:
+        logger.warning(f"HTTP exception in media stream: {e}")
+        raise
     except Exception as e:
         error_id = secrets.token_hex(6)
         logger.error(f"Server error {error_id}: {e}", exc_info=True)
