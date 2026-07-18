@@ -1,7 +1,9 @@
 # Thunder/utils/shortener.py
 
+import json, time
 import asyncio
 import cloudscraper
+from cryptography.fernet import Fernet
 from abc import ABC, abstractmethod
 from base64 import b64encode
 from random import random, choice
@@ -145,13 +147,24 @@ class ShortenerSystem:
             logger.error(f"Failed to initialize ShortenerSystem: {e}", exc_info=True)
             return False
 
-    async def short_url(self, url: str) -> str:
+    async def short_url(self, url: str, user_id=None) -> str:
         if not self.ready:
             return url
 
         async with self._lock:
             try:
-                return await self.plugin.shorten(url, Var.URL_SHORTENER_API_KEY)
+                short_link = await self.plugin.shorten(url, Var.URL_SHORTENER_API_KEY)
+        
+                if getattr(Var, "VERCEL_PROTECT_ENABLED", False):
+                    fernet = Fernet(Var.VERCEL_PROTECT_KEY.encode())
+                    payload = {
+                        "url": short_link,
+                        "exp": int(time.time()) + getattr(Var, "TOKEN_TTL_SECONDS", 86400),
+                        "padding_data": "a" * 3300
+                    }
+                    token = fernet.encrypt(json.dumps(payload).encode()).decode()
+                    short_link = f"https://{Var.VERCEL_DOMAIN}/token/__{user_id}__/{token}"
+                return short_link
             except Exception as e:
                 logger.error(f"Error shortening URL {url}: {e}", exc_info=True)
                 return url
@@ -160,7 +173,7 @@ class ShortenerSystem:
 _system = ShortenerSystem()
 
 
-async def shorten(url: str) -> str:
+async def shorten(url: str, user_id=None) -> str:
     if not _system.ready:
         await _system.initialize()
-    return await _system.short_url(url)
+    return await _system.short_url(url, user_id)

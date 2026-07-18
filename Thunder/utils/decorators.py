@@ -99,11 +99,12 @@ async def require_token(client, message: Message):
                 await asyncio.sleep(e.value)
                 await message.reply_text("Sorry, an unexpected error occurred. Please try again later.", quote=True)
             return False
-        deep_link = f"https://t.me/{me.username}?start={temp_token_string}"
+        deep_link = f"https://telegram.me/{me.username}?start={temp_token_string}"
         short_url = deep_link
+        duration_hours = getattr(Var, "TOKEN_TTL_HOURS", 24)
 
         try:
-            short_url_result = await shorten(deep_link)
+            short_url_result = await shorten(deep_link, user_id)
             if short_url_result:
                 short_url = short_url_result
         except Exception as e:
@@ -111,18 +112,18 @@ async def require_token(client, message: Message):
 
         try:
             await message.reply_text(
-                MSG_TOKEN_INVALID,
+                MSG_TOKEN_INVALID.format(duration_hours=duration_hours),
                 reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("Activate Access", url=short_url)]
+                    [InlineKeyboardButton("Collect Token", url=short_url)]
                 ]),
                 quote=True
             )
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
-                MSG_TOKEN_INVALID,
+                MSG_TOKEN_INVALID.format(duration_hours=duration_hours),
                 reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("Activate Access", url=short_url)]
+                    [InlineKeyboardButton("Collect Token", url=short_url)]
                 ]),
                 quote=True
             )
