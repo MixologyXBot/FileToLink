@@ -1,6 +1,5 @@
 aiohttp
 cloudscraper
-cryptography
 Jinja2
 pyrofork
 pymongo
