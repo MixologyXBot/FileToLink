@@ -98,3 +98,75 @@ async def test_cache_hit_is_returned_without_http():
 )
 def test_plugin_host_matching(domain, plugin, expected):
     assert plugin.matches(domain) is expected
+
+
+@pytest.mark.unit
+def test_vercel_protection_roundtrip():
+    import hashlib
+    import json
+    import time
+    from base64 import urlsafe_b64decode, urlsafe_b64encode
+
+    secret_key = "my_vercel_secret_passphrase"
+    payload = {
+        "url": "https://shrinkme.dev/abc1234",
+        "exp": int(time.time()) + 86400,
+        "padding_data": "a" * 3300,
+    }
+    key_hash = hashlib.sha256(secret_key.encode()).digest()
+    token = urlsafe_b64encode(
+        bytes(c ^ key_hash[i % 32] for i, c in enumerate(json.dumps(payload).encode()))
+    ).decode()
+
+    # Decrypt
+    decrypted_bytes = bytes(
+        c ^ key_hash[i % 32] for i, c in enumerate(urlsafe_b64decode(token.encode()))
+    )
+    restored = json.loads(decrypted_bytes.decode())
+    assert restored["url"] == payload["url"]
+    assert restored["exp"] == payload["exp"]
+    assert restored["padding_data"] == "a" * 3300
+
+
+@pytest.mark.unit
+async def test_vercel_protection_short_url_applied(monkeypatch):
+    import hashlib
+    import json
+    from base64 import urlsafe_b64decode
+
+    from Thunder.vars import Var
+
+    monkeypatch.setattr(Var, "VERCEL_PROTECT_ENABLED", True)
+    monkeypatch.setattr(Var, "VERCEL_PROTECT_KEY", "super_secret_key")
+    monkeypatch.setattr(Var, "VERCEL_DOMAIN", "edge.vercel.app")
+    monkeypatch.setattr(Var, "TOKEN_TTL_SECONDS", 3600)
+
+    system = ShortenerSystem()
+    system.ready = True
+    system._cache["https://long.example/movie.mp4"] = "https://short.io/m1"
+
+    short_link = await system.short_url("https://long.example/movie.mp4", user_id=554433)
+    assert short_link.startswith("https://edge.vercel.app/token/__554433__/")
+
+    token = short_link.split("/")[-1]
+    key_hash = hashlib.sha256(b"super_secret_key").digest()
+    decrypted_bytes = bytes(
+        c ^ key_hash[i % 32] for i, c in enumerate(urlsafe_b64decode(token.encode()))
+    )
+    restored = json.loads(decrypted_bytes.decode())
+    assert restored["url"] == "https://short.io/m1"
+    assert len(restored["padding_data"]) == 3300
+
+
+@pytest.mark.unit
+async def test_vercel_protection_disabled(monkeypatch):
+    from Thunder.vars import Var
+
+    monkeypatch.setattr(Var, "VERCEL_PROTECT_ENABLED", False)
+
+    system = ShortenerSystem()
+    system.ready = True
+    system._cache["https://long.example/movie.mp4"] = "https://short.io/m1"
+
+    short_link = await system.short_url("https://long.example/movie.mp4", user_id=554433)
+    assert short_link == "https://short.io/m1"

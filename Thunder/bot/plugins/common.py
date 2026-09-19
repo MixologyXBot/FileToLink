@@ -17,7 +17,6 @@ from Thunder.utils.bot_utils import gen_dc_txt, get_user, log_newusr, reply_user
 from Thunder.utils.commands import build_help_text
 from Thunder.utils.decorators import GATES_START, preflight
 from Thunder.utils.file_properties import get_fname, get_fsize, parse_fid
-from Thunder.utils.force_channel import get_force_info
 from Thunder.utils.human_readable import humanbytes
 from Thunder.utils.logger import logger
 from Thunder.utils.messages import (
@@ -25,10 +24,7 @@ from Thunder.utils.messages import (
     MSG_BUTTON_ABOUT,
     MSG_BUTTON_CLOSE,
     MSG_BUTTON_GET_HELP,
-    MSG_BUTTON_GITHUB,
-    MSG_BUTTON_JOIN_CHANNEL,
     MSG_BUTTON_VIEW_PROFILE,
-    MSG_COMMUNITY_CHANNEL,
     MSG_DC_ANON_ERROR,
     MSG_DC_FILE_ERROR,
     MSG_DC_FILE_INFO,
@@ -101,25 +97,13 @@ async def start_command(bot: Client, msg: Message):
         user_name=html.escape(user.first_name or "Unknown") if user else "Unknown",
         max_files=Var.MAX_BATCH_FILES,
     )
-    link, title = await get_force_info(bot)
-    if link:
-        txt += "\n\n" + MSG_COMMUNITY_CHANNEL.format(channel_title=html.escape(title or "Channel"))
 
     btns: list[list[InlineKeyboardButton | InlineKeyboardButtonBuy]] = [
         [
             InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
             InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
-        ],
-        [
-            InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
-            InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel"),
-        ],
+        ]
     ]
-
-    if link:
-        btns.append(
-            [InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)]
-        )
 
     await reply_safe(
         msg, text=txt, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btns)
@@ -135,16 +119,11 @@ async def help_command(bot: Client, msg: Message):
 
     txt = build_help_text(Var.MAX_BATCH_FILES)
     btns: list[list[InlineKeyboardButton | InlineKeyboardButtonBuy]] = [
-        [InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]
+        [
+            InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
+            InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel"),
+        ]
     ]
-
-    link, title = await get_force_info(bot)
-    if link:
-        btns.append(
-            [InlineKeyboardButton(MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title), url=link)]
-        )
-
-    btns.append([InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")])
     await reply_safe(
         msg, text=txt, parse_mode=ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btns)
     )
@@ -158,11 +137,10 @@ async def about_command(bot: Client, msg: Message):
         await log_newusr(bot, msg.from_user.id, msg.from_user.first_name)
 
     btns: list[list[InlineKeyboardButton | InlineKeyboardButtonBuy]] = [
-        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
         [
-            InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink/"),
+            InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
             InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel"),
-        ],
+        ]
     ]
 
     await reply_safe(

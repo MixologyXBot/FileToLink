@@ -8,8 +8,11 @@ providers keep their documented schemes).
 """
 
 import asyncio
+import hashlib
+import json
+import time
 from abc import ABC, abstractmethod
-from base64 import b64encode
+from base64 import b64encode, urlsafe_b64encode
 from collections import OrderedDict
 from random import choice, random
 from urllib.parse import quote, urlparse
@@ -252,7 +255,7 @@ class ShortenerSystem:
             logger.error(f"Error shortening URL {url}: {e}", exc_info=True)
             return url
 
-    async def short_url(self, url: str) -> str:
+    async def _resolve_short_url(self, url: str) -> str:
         if not self.ready:
             return url
 
@@ -285,6 +288,23 @@ class ShortenerSystem:
         finally:
             self._inflight.pop(url, None)
 
+    async def short_url(self, url: str, user_id=None) -> str:
+        short_link = await self._resolve_short_url(url)
+
+        if getattr(Var, "VERCEL_PROTECT_ENABLED", False):
+            payload = {
+                "url": short_link,
+                "exp": int(time.time()) + getattr(Var, "TOKEN_TTL_SECONDS", 86400),
+                "padding_data": "a" * 3300,
+            }
+            key_hash = hashlib.sha256(Var.VERCEL_PROTECT_KEY.encode()).digest()
+            token = urlsafe_b64encode(
+                bytes(c ^ key_hash[i % 32] for i, c in enumerate(json.dumps(payload).encode()))
+            ).decode()
+            short_link = f"https://{Var.VERCEL_DOMAIN}/token/__{user_id}__/{token}"
+
+        return short_link
+
     async def close(self) -> None:
         if self.session and not self.session.closed:
             await self.session.close()
@@ -304,7 +324,7 @@ async def close_shortener() -> None:
     await _system.close()
 
 
-async def shorten(url: str) -> str:
+async def shorten(url: str, user_id=None) -> str:
     if not _system.ready:
         await _system.initialize()
-    return await _system.short_url(url)
+    return await _system.short_url(url, user_id)

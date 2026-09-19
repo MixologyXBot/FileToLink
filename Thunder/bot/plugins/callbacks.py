@@ -8,7 +8,6 @@ from Thunder.bot import StreamBot
 from Thunder.utils.broadcast import broadcast_ids
 from Thunder.utils.commands import build_help_text
 from Thunder.utils.decorators import owner_only
-from Thunder.utils.force_channel import get_force_info
 from Thunder.utils.logger import logger
 from Thunder.utils.messages import (
     MSG_ABOUT,
@@ -16,8 +15,6 @@ from Thunder.utils.messages import (
     MSG_BUTTON_ABOUT,
     MSG_BUTTON_CLOSE,
     MSG_BUTTON_GET_HELP,
-    MSG_BUTTON_GITHUB,
-    MSG_BUTTON_JOIN_CHANNEL,
     MSG_ERROR_BROADCAST_INSTRUCTION,
     MSG_ERROR_BROADCAST_RESTART,
     MSG_ERROR_CALLBACK_UNSUPPORTED,
@@ -58,32 +55,16 @@ def guard_callback(fn):
     return wrapper
 
 
-async def get_force_channel_button(client: Client):
-    if not Var.FORCE_CHANNEL_ID:
-        return None
-    try:
-        link, title = await get_force_info(client)
-        if link:
-            return [
-                InlineKeyboardButton(
-                    MSG_BUTTON_JOIN_CHANNEL.format(channel_title=title or "Channel"),
-                    url=link,
-                )
-            ]
-    except Exception as e:
-        logger.error(f"Error getting force channel button: {e}", exc_info=True)
-    return None
-
-
 @StreamBot.on_callback_query(filters.regex(r"^help_command$"))
 @guard_callback
 async def help_callback(client: Client, callback_query: CallbackQuery):
     await answer_safe(callback_query)
-    buttons = [[InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command")]]
-    force_button = await get_force_channel_button(client)
-    if force_button:
-        buttons.append(force_button)
-    buttons.append([InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel")])
+    buttons = [
+        [
+            InlineKeyboardButton(MSG_BUTTON_ABOUT, callback_data="about_command"),
+            InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel"),
+        ]
+    ]
     help_text = build_help_text(Var.MAX_BATCH_FILES)
     try:
         await edit_safe(
@@ -101,11 +82,10 @@ async def help_callback(client: Client, callback_query: CallbackQuery):
 async def about_callback(client: Client, callback_query: CallbackQuery):
     await answer_safe(callback_query)
     buttons = [
-        [InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command")],
         [
-            InlineKeyboardButton(MSG_BUTTON_GITHUB, url="https://github.com/fyaz05/FileToLink"),
+            InlineKeyboardButton(MSG_BUTTON_GET_HELP, callback_data="help_command"),
             InlineKeyboardButton(MSG_BUTTON_CLOSE, callback_data="close_panel"),
-        ],
+        ]
     ]
     try:
         await edit_safe(

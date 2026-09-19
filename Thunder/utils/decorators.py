@@ -197,12 +197,16 @@ async def require_token(client, message: Message) -> bool:
                 pass
             return False
         deep_link = (
-            "https://t.me/" + me.username + "?start=" + quote_plus(temp_token_string, safe="")
+            "https://telegram.me/"
+            + me.username
+            + "?start="
+            + quote_plus(temp_token_string, safe="")
         )
         short_url = deep_link
+        duration_hours = getattr(Var, "TOKEN_TTL_HOURS", 24)
 
         try:
-            short_url_result = await shorten(deep_link)
+            short_url_result = await shorten(deep_link, user_id)
             if short_url_result:
                 short_url = short_url_result
         except Exception as e:
@@ -214,9 +218,9 @@ async def require_token(client, message: Message) -> bool:
         try:
             await reply_safe(
                 message,
-                MSG_TOKEN_INVALID,
+                MSG_TOKEN_INVALID.format(duration_hours=duration_hours),
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("Activate Access", url=short_url)]]
+                    [[InlineKeyboardButton("Collect Token", url=short_url)]]
                 ),
             )
         except Exception:

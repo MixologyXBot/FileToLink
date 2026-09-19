@@ -182,6 +182,16 @@ class Var:
             "missing; links will not be shortened."
         )
 
+    VERCEL_PROTECT_ENABLED: bool = str_to_bool(os.getenv("VERCEL_PROTECT_ENABLED", "False"))
+    VERCEL_PROTECT_KEY: str = os.getenv("VERCEL_PROTECT_KEY", "")
+    VERCEL_DOMAIN: str = os.getenv("VERCEL_DOMAIN", "")
+    TOKEN_TTL_SECONDS: int = _get_int("TOKEN_TTL_SECONDS", "86400", min_val=1)
+    if VERCEL_PROTECT_ENABLED and not (VERCEL_PROTECT_KEY and VERCEL_DOMAIN):
+        _config_warnings.append(
+            "VERCEL_PROTECT_ENABLED is set but VERCEL_PROTECT_KEY or VERCEL_DOMAIN "
+            "is missing; Vercel link protection may fail."
+        )
+
     GLOBAL_RATE_LIMIT: bool = str_to_bool(os.getenv("GLOBAL_RATE_LIMIT", "False"))
     MAX_GLOBAL_REQUESTS_PER_MINUTE: int = _get_int("MAX_GLOBAL_REQUESTS_PER_MINUTE", "4", min_val=1)
     GLOBAL_RPS_LIMIT: float = _get_float(

@@ -33,8 +33,8 @@ MSG_ERROR_ANONYMOUS_SENDER = (
     "🙈 **Unidentifiable sender.** This command needs a regular user account "
     "(anonymous admins and channel posts cannot use it)."
 )
-MSG_FORCE_JOIN_BUTTON = "📢 Join"
-MSG_FORCE_SUB_REQUIRED = "You must join the channel to use this bot."
+MSG_FORCE_JOIN_BUTTON = "Join Channel"
+MSG_FORCE_SUB_REQUIRED = "To access the <b>Bot</b>, please Join Channel first."
 MSG_FORCE_SUB_CHECK_FAILED = (
     "An unexpected error occurred while checking channel membership. Please try again."
 )
@@ -99,12 +99,8 @@ MSG_AUTHORIZE_SUCCESS = (
 MSG_DEAUTHORIZE_SUCCESS = (
     "✅ **User Deauthorized!**\n\n> 👤 User ID: `{user_id}`\n> 🔒 Access: Revoked"
 )
-MSG_TOKEN_ACTIVATED = (
-    "✅ Token successfully activated!\n\n⏳ This token is valid for {duration_hours} hours."
-)
-MSG_TOKEN_INVALID = (
-    "🚫 **Expired or Invalid Token.** Please click the button below to activate your access token."
-)
+MSG_TOKEN_ACTIVATED = "Your token has been successfully activated!\n\n<b>This token is valid for {duration_hours} hours.</b>"
+MSG_TOKEN_INVALID = "Your token has expired. Please collect a new token.\n\n<b>It will expire after {duration_hours} hours.</b>"
 MSG_NO_AUTH_USERS = "ℹ️ **No Authorized Users Found:** The list is currently empty."
 MSG_AUTH_USER_INFO = """{i}. 👤: {display_name}
    • User ID: <code>{user_id}</code>
@@ -137,13 +133,13 @@ MSG_LOG_FILE_MISSING = "⚠️ **Log File Missing:** Could not find the log file
 
 # ====== BUTTON TEXTS (User-facing) ======
 
-MSG_BUTTON_STREAM_NOW = "🖥️ Stream"
-MSG_BUTTON_DOWNLOAD = "🚀 Download"
-MSG_BUTTON_GET_HELP = "📖 Get Help"
+MSG_BUTTON_STREAM_NOW = "▶️ Stream"
+MSG_BUTTON_DOWNLOAD = "📥 Download"
+MSG_BUTTON_GET_HELP = "🏷️ Help"
 MSG_BUTTON_CANCEL_BROADCAST = "🛑 Cancel Broadcast"
 MSG_BUTTON_VIEW_PROFILE = "👤 View User Profile"
-MSG_BUTTON_ABOUT = "ℹ️ About Bot"
-MSG_BUTTON_JOIN_CHANNEL = "📢 Join {channel_title}"
+MSG_BUTTON_ABOUT = "ℹ️ About"
+MSG_BUTTON_JOIN_CHANNEL = "Join {channel_title}"
 MSG_BUTTON_GITHUB = "🛠️ GitHub"
 MSG_BUTTON_START_CHAT = "📩 Start Chat"
 MSG_BUTTON_CLOSE = "✖ Close"
@@ -153,34 +149,25 @@ MSG_BUTTON_CLOSE = "✖ Close"
 # welcome/help/about are HTML and interpolate html.escape()d values.
 MSG_WELCOME = (
     "🌟 <b>Welcome, {user_name}!</b> 🌟\n\n"
-    "I'm <b>Thunder File to Link Bot</b> ⚡\n"
-    "I generate direct download and streaming links for your files.\n\n"
-    "<b>How to use:</b>\n"
-    "1. Send any file to me for private links.\n"
-    "2. In groups, reply to a file with /link (up to {max_files} at once: <code>/link 5</code>).\n"
-    "3. Stream links support seeking in any browser.\n\n"
-    "» Use /help for all commands and detailed information.\n\n"
-    "🚀 Send a file to begin!"
+    "I can generate direct download and streaming links for your files. Simply send me any file, and I'll provide you with shareable links.\n\n"
+    "🔸 Available Commands:\n"
+    "> • /help - Learn how to use the bot\n"
+    "> • /link - Generate links in groups\n"
+    "> • /about - Information about the bot\n"
+    "> • /ping - Check bot's response time\n"
+    "> • /dc - View data center info\n\n"
+    "✨ Enjoy using the bot, and feel free to share your feedback!"
 )
 
 MSG_HELP_INTRO = (
-    "📘 <b>Thunder Bot - Help Guide</b> 📖\n\n"
-    "How to get direct download &amp; streaming links:\n\n"
-    "<b>🚀 Private Chat (with me):</b>\n"
-    "> 1. Send me <b>any file</b> (document, video, audio, photo, etc.).\n"
-    "> 2. I'll instantly reply with your links! ⚡\n\n"
-    "<b>👥 Using in Groups:</b>\n"
-    "> • Reply to any file with /link.\n"
-    "> • <b>Batch Mode:</b> Reply to the <b>first</b> file with <code>/link &lt;number&gt;</code> "
-    "(e.g., <code>/link 5</code> for 5 files, up to {max_files}).\n"
-    "> • Bot needs administrator rights in the group to function.\n"
-    "> • Links are posted in the group &amp; sent to you privately.\n\n"
-    "<b>📢 Using in Channels:</b>\n"
-    "> • Add me as an administrator with necessary permissions.\n"
-    "> • I can be configured to auto-detect new media files.\n"
-    "> • Inline stream/download buttons can be added to files automatically.\n"
-    "> • Files from banned channels (owner configuration) are rejected.\n"
-    "> • Auto-posting links if the bot has admin privileges with delete rights.\n"
+    "<b>How to Use Mixology Stream Bot</b>\n\n"
+    "<b>For Direct Links:</b>\n"
+    "• Send any file to the bot\n"
+    "• Instantly receive download and streaming links\n\n"
+    "<b>In Groups:</b>\n"
+    "• Reply to any file with the /link command\n"
+    "• For batches, reply to the top file using <code>/link &lt;number&gt;</code> "
+    "(e.g., <code>/link 5</code> for 5 files, up to {max_files})\n"
 )
 
 # the commands section is generated from bot/registry.py.
@@ -188,17 +175,13 @@ MSG_HELP_COMMANDS_HEADER = "\n<b>⚙️ Available Commands:</b>\n"
 MSG_HELP_COMMAND_ROW = "> /{name} - {description}\n"
 
 MSG_HELP_TIPS = (
-    "\n<b>💡 Pro Tips:</b>\n"
-    "> • You can forward files from other chats directly to me.\n"
-    "> • If you encounter a rate limit message, please wait the specified time. ⏳\n"
-    "> • For /link in groups to work reliably (and for private link delivery), "
-    "ensure you've started a private chat with me first.\n"
-    "> • Processing batch files might take a bit longer. Please be patient. 🐌\n\n"
-    "❓ Questions? Please ask in our support group!"
+    "\n<b>Note:</b> Sharing NSFW (18+) content will result in a <b>permanent ban</b>.\n\n"
+    "Thank you for using <b>Mixology Stream Bot</b>!\n"
+    "Enjoy smooth and seamless access to your media."
 )
 
 MSG_ABOUT = (
-    "🌟 <b>About Thunder File to Link Bot</b> ℹ️\n\n"
+    "🌟 <b>About Mixology Stream Bot</b> ℹ️\n\n"
     "I'm your go-to bot for <b>instant download &amp; streaming!</b> ⚡\n\n"
     "<b>🚀 Key Features:</b>\n"
     "> <b>Instant Links:</b> Get your links within seconds.\n"
@@ -210,7 +193,7 @@ MSG_ABOUT = (
     "> <b>Efficient Processing:</b> Built for speed and reliability.\n"
     "> <b>Batch Mode:</b> Process multiple files at once in groups using <code>/link &lt;number&gt;</code>.\n"
     "> <b>Versatile Usage:</b> Works in private chats, groups, and channels (with admin setup).\n\n"
-    "💖 If you find me useful, please consider sharing me with your friends!"
+    "If you find me useful, please consider sharing me with your friends!"
 )
 
 MSG_PING_START = "🛰️ **Pinging...** Please wait."
@@ -240,12 +223,11 @@ MSG_DC_UNKNOWN = "Unknown"
 # Link messages are HTML: file names are user-controlled, escape at render.
 MSG_DM_SINGLE_PREFIX = "📬 <b>From {chat_title}</b>\n"
 MSG_LINKS = (
-    "✨ <b>Your Links are Ready!</b> ✨\n\n"
-    "> <code>{file_name}</code>\n\n"
-    "📂 <b>File Size:</b> <code>{file_size}</code>\n\n"
-    "🚀 <b>Download Link:</b>\n<code>{download_link}</code>\n\n"
-    "🖥️ <b>Stream Link:</b>\n<code>{stream_link}</code>\n\n"
-    "⌛️ <b>Note: Links remain active while the bot is running and the file is accessible.</b>"
+    ">📝 <b>File Name:</b> <code>{file_name}</code>\n"
+    ">📦 <b>File Size:</b> <code>{file_size}</code>\n\n"
+    "📥 <b>Download Link:</b>\n <code>{download_link}</code>\n\n"
+    "▶️ <b>Stream Link:</b>\n <code>{stream_link}</code>\n\n"
+    "⌛️ <b>Note:</b> Links valid for 24 hours only. Download or watch before they expire!"
 )
 
 # appended to link messages only when FILE_TTL_DAYS > 0
@@ -259,7 +241,7 @@ MSG_NEW_USER = (
     '> 👤 <b>Name:</b> <a href="tg://user?id={user_id}">{first_name}</a>\n'
     "> 🆔 <b>User ID:</b> <code>{user_id}</code>\n\n"
 )
-MSG_COMMUNITY_CHANNEL = "📢 <b>{channel_title}:</b> 🔒 Join this channel to use the bot."
+MSG_COMMUNITY_CHANNEL = "To access the <b>Bot</b>, please join <b>{channel_title}</b> first."
 
 # ====== PROCESSING MESSAGES ======
 

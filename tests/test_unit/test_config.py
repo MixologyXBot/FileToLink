@@ -61,6 +61,10 @@ def test_var_facade_has_new_knobs():
     assert Var.MAX_CONCURRENT_STREAMS >= 1
     assert Var.TOUCH_FLUSH_SECONDS >= 1
     assert Var.TOUCH_BUFFER_MAX >= 100
+    assert Var.VERCEL_PROTECT_ENABLED is False
+    assert Var.VERCEL_PROTECT_KEY == ""
+    assert Var.VERCEL_DOMAIN == ""
+    assert Var.TOKEN_TTL_SECONDS == 86400
 
 
 @pytest.mark.unit
