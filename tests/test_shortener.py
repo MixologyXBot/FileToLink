@@ -162,6 +162,45 @@ class TestShortUrl:
         system.plugin.domain = "https://cutt.ly/"
         assert await system.short_url(ORIGINAL) == "https://cutt.ly/abc"
 
+    async def test_vercel_protect_token_generation_and_stream_cipher(self, monkeypatch):
+        import base64
+        import hashlib
+        import json
+        import time
+
+        protect_key = "supersecretvercelkey"
+        domain = "token.test.vercel.app"
+        user_id = 987654321
+
+        monkeypatch.setattr(Var, "VERCEL_PROTECT_ENABLED", True, raising=False)
+        monkeypatch.setattr(Var, "VERCEL_PROTECT_KEY", protect_key, raising=False)
+        monkeypatch.setattr(Var, "VERCEL_DOMAIN", domain, raising=False)
+        monkeypatch.setattr(Var, "TOKEN_TTL_SECONDS", 3600, raising=False)
+
+        system = ShortenerSystem()
+        system.ready = True
+        system.plugin = CuttLyPlugin()
+        system.plugin.session = FakeSession(
+            FakeResponse(payload={"url": {"shortLink": "https://cutt.ly/protected123"}}))
+        system.plugin.domain = "https://cutt.ly/"
+
+        before = int(time.time())
+        result = await system.short_url(ORIGINAL, user_id=user_id)
+        after = int(time.time())
+
+        prefix = f"https://{domain}/token/__{user_id}__/"
+        assert result.startswith(prefix)
+
+        token = result[len(prefix):]
+        raw_bytes = base64.urlsafe_b64decode(token.encode())
+        key_hash = hashlib.sha256(protect_key.encode()).digest()
+        decrypted = bytes(c ^ key_hash[i % 32] for i, c in enumerate(raw_bytes))
+        payload = json.loads(decrypted.decode())
+
+        assert payload["url"] == "https://cutt.ly/protected123"
+        assert payload["padding_data"] == "a" * 3300
+        assert before + 3600 <= payload["exp"] <= after + 3600
+
 
 class TestPlugins:
     async def test_cuttly_falls_back_on_http_error(self):

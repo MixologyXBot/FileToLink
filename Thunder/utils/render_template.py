@@ -15,9 +15,9 @@ from Thunder.utils.human_readable import humanbytes
 from Thunder.utils.logger import logger
 from Thunder.vars import Var
 
-SITE_NAME = "Thunder"
-REPO_URL = "https://github.com/fyaz05/FileToLink"
-LOGO_URL = "https://cdn.jsdelivr.net/gh/fyaz05/Resources@main/ThunderGo/logo.png"
+SITE_NAME = "MixologyXBot"
+REPO_URL = "https://telegram.me/MixologyXBot"
+LOGO_URL = "https://cdn.jsdelivr.net/gh/MixologyXBot/Resources@main/FileToLink/logo.png"
 
 # Module-relative: the bot may be started from any working directory.
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "template"
