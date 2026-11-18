@@ -34,7 +34,7 @@ def test_gitignore_keeps_generated_env_files_out_of_a_self_update_commit():
         shutil.copy(REPO / ".gitignore", tmp / ".gitignore")
         assert git(tmp, "init", "-q").returncode == 0
 
-        for relative in ("config.env", "docker.env", "deploy/prod.env"):
+        for relative in ("docker.env", "deploy/prod.env"):
             target = tmp / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("API_HASH=secret\n")
@@ -44,6 +44,10 @@ def test_gitignore_keeps_generated_env_files_out_of_a_self_update_commit():
         (tmp / "config_sample.env").write_text('API_HASH=""\n')
         assert not is_git_ignored(tmp, "config_sample.env"), \
             "the sample template must stay committable"
+
+        (tmp / "config.env").write_text('API_HASH=""\n')
+        assert not is_git_ignored(tmp, "config.env"), \
+            "config.env must be committable for platforms like Heroku"
 
         (tmp / "VPS.md").write_text("ssh deploy@example.invalid\n")
         assert is_git_ignored(tmp, "VPS.md"), "VPS.md carries an SSH credential"
