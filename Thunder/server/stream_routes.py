@@ -336,7 +336,7 @@ async def player_asset(request: web.Request):
 
 @routes.get("/", allow_head=True)
 async def root_redirect(request):
-    raise web.HTTPFound("https://github.com/fyaz05/FileToLink")
+    raise web.HTTPFound("https://telegram.me/MixologyXBot")
 
 
 @routes.get("/status", allow_head=True)
