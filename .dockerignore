@@ -6,6 +6,7 @@
 .gitattributes
 **/*.env
 !config_sample.env
+!config.env
 **/*.session
 **/*.session-journal
 **/*.session-shm

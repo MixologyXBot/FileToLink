@@ -5,12 +5,18 @@ import of this module implies usable settings.
 """
 
 import os
+from pathlib import Path
+from typing import Optional, Set
 
 from dotenv import load_dotenv
-from typing import Set, Optional
+
 from Thunder.utils.logger import logger
 
-load_dotenv("config.env")
+CONFIG_FILE = Path(__file__).resolve().parent.parent / "config.env"
+if CONFIG_FILE.is_file():
+    load_dotenv(CONFIG_FILE, override=True)
+else:
+    load_dotenv("config.env", override=True)
 
 def str_to_bool(val: str) -> bool:
     return val.lower() in ("true", "1", "t", "y", "yes")

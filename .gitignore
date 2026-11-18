@@ -7,6 +7,7 @@ venv/
 # Exclude env files (a stray `git add -A` must not pick them up); track only the template.
 *.env
 !config_sample.env
+!config.env
 # Local operational files containing credentials or scratch notes.
 VPS.md
 PLAN.md
